@@ -35,6 +35,7 @@ describe('CatalogAPI(' + desired.browserName + ')', function() {
     var allPassed = true;
 
     before(function(done) {
+        this.timeout(20000);
         var username = process.env.SAUCE_USERNAME;
         var accessKey = process.env.SAUCE_ACCESS_KEY;
         browser = wd.promiseChainRemote(process.env.HOST, process.env.PORT, username, accessKey);
