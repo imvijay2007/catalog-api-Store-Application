@@ -9,6 +9,16 @@ var gruntConfig = {
         },
 
         mochaTest: {
+            'test-real': {
+                options: {
+                    reporter: 'json',
+                    clearRequireCache: true,
+                    colors: true,
+                    quite: true,
+                    captureFile: 'mocha.json'
+                },
+                src: ['tests/sauce_actual/test-cases.js']
+            },
             'server-side': {
                 options: {
                     reporter: 'json',
@@ -167,4 +177,5 @@ module.exports = function(grunt) {
     grunt.registerTask('dev-fvt', ['env:test', 'clean:coverage', 'mochaTest:fvt']);
     grunt.registerTask('test_real', ['env:chrome', 'simplemocha:sauce:' + _(desireds).keys().first()]);
     grunt.registerTask('test_fake', ['env:chrome', 'simplemocha:sauce_node:' + _(desireds).keys().first()]);
+    grunt.registerTask('dev-test-real', ['env:chrome', 'mochaTest:test-real:' + _(desireds).keys().first()]);
 };
