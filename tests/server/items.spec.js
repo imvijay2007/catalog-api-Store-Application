@@ -219,45 +219,52 @@
             assert( resMock.send.lastCall.calledWith( { msg: 'Error getting item for update: forced error on get' } ), 'Unexpected argument: ' + JSON.stringify(resMock.send.lastCall.args) );
         });
     });
-    
-    describe('remove Function', function() {
-        it('Item removed successfully', function() {        
-            mockdb.itemsDb.get = function( id, arg, callback ){
-                callback( false, 'body' );  
-            };
-            
-            mockdb.itemsDb.destroy = function( id, arg, callback ){
-                callback( false, '' );  
-            };
-            
-            items.remove( reqMock, resMock );
-            assert( resMock.send.lastCall.calledWith( { msg: 'Successfully deleted item' } ), 'Unexpected argument: ' + JSON.stringify(resMock.send.lastCall.args) );
+
+    if(process.env.FAKE_COVERAGE_REGRESSION === "true"){
+        //
+        // create coverage regression in DRA
+        //
+    }
+    else {
+        describe('remove Function', function () {
+            it('Item removed successfully', function () {
+                mockdb.itemsDb.get = function (id, arg, callback) {
+                    callback(false, 'body');
+                };
+
+                mockdb.itemsDb.destroy = function (id, arg, callback) {
+                    callback(false, '');
+                };
+
+                items.remove(reqMock, resMock);
+                assert(resMock.send.lastCall.calledWith({msg: 'Successfully deleted item'}), 'Unexpected argument: ' + JSON.stringify(resMock.send.lastCall.args));
+            });
+
+            it('Item not removed - error on destroy', function () {
+                mockdb.itemsDb.get = function (id, arg, callback) {
+                    callback(false, 'body');
+                };
+
+                mockdb.itemsDb.destroy = function (id, arg, callback) {
+                    callback('forced erro on destroy', '');
+                };
+
+                items.remove(reqMock, resMock);
+                assert(resMock.send.lastCall.calledWith({msg: 'Error in delete: forced erro on destroy'}), 'Unexpected argument: ' + JSON.stringify(resMock.send.lastCall.args));
+            });
+
+            it('Item not removed - error on get', function () {
+                mockdb.itemsDb.get = function (id, arg, callback) {
+                    callback('forced error on get', 'body');
+                };
+
+                mockdb.itemsDb.destroy = function (id, arg, callback) {
+                    callback(false, '');
+                };
+
+                items.remove(reqMock, resMock);
+                assert(resMock.send.lastCall.calledWith({msg: 'Error getting item id: forced error on get'}), 'Unexpected argument: ' + JSON.stringify(resMock.send.lastCall.args));
+            });
         });
-        
-        it('Item not removed - error on destroy', function() {
-            mockdb.itemsDb.get = function( id, arg, callback ){
-                callback( false, 'body' );  
-            };
-            
-            mockdb.itemsDb.destroy = function( id, arg, callback ){
-                callback( 'forced erro on destroy', '' );  
-            };
-            
-            items.remove( reqMock, resMock );
-            assert( resMock.send.lastCall.calledWith( { msg: 'Error in delete: forced erro on destroy' } ), 'Unexpected argument: ' + JSON.stringify(resMock.send.lastCall.args) );
-        });
-        
-        it('Item not removed - error on get', function() {
-            mockdb.itemsDb.get = function( id, arg, callback ){
-                callback( 'forced error on get', 'body' );  
-            };
-            
-            mockdb.itemsDb.destroy = function( id, arg, callback ){
-                callback( false, '' );
-            };
-            
-            items.remove( reqMock, resMock );
-            assert( resMock.send.lastCall.calledWith( { msg: 'Error getting item id: forced error on get' } ), 'Unexpected argument: ' + JSON.stringify(resMock.send.lastCall.args) );
-        });
-    });
+    }
 }());
